@@ -47,10 +47,9 @@ Follow these steps to get the Task Manager up and running on your local machine:
 First, clone this project to your local machine using Git:
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/vivekjoshi2006/Task-Manager.git
 cd google_keep_clone # Navigate into the project directory
 ```
-*(Replace `<your-repository-url>` with the actual URL of your Git repository.)*
 
 ### 2. **Set Up a Python Virtual Environment (Recommended)**
 
