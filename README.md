@@ -1,5 +1,5 @@
 
-#  Keep-style Task Manager (Flask & Frontend)
+#  Task Manager (Flask & Frontend)
 
 ## 🚀 Project Explanation
 
@@ -48,7 +48,7 @@ First, clone this project to your local machine using Git:
 
 ```bash
 git clone https://github.com/vivekjoshi2006/Task-Manager.git
-cd google_keep_clone # Navigate into the project directory
+cd Task Manager  # Navigate into the project directory
 ```
 
 ### 2. **Set Up a Python Virtual Environment (Recommended)**
