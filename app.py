@@ -118,7 +118,3 @@ def delete_task_api(task_id):
 
     save_tasks_to_file(tasks) # Save the new (smaller) list
     return jsonify({"message": "Task deleted successfully."})
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
