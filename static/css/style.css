@@ -479,7 +479,6 @@ body.glass-bg {
     text-align: center;
     color: var(--text-dark);
     grid-column: 1 / -1;
-    font-style: italic;
     font-size: 1.5em;
     padding: 20px;
 }
