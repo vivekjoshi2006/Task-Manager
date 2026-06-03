@@ -14,7 +14,6 @@ html {
     --text-dark: #333333;  
     --text-light: #666666;  
 
-
     /* Glassmorphism Background*/
 
     --bg-main: linear-gradient(135deg, #87CEEB, #ADD8E6, #B0E0E6); 
@@ -23,9 +22,6 @@ html {
     --shadow-light: rgba(0,0,0,0.1);
     --shadow-hover: rgba(0,0,0,0.2);
 }
-
-
-/* -------------------------------- Glassmorphism Background for Body -------------------------------- */
 
 body.glass-bg {
     font-family: 'Roboto', sans-serif;
@@ -39,9 +35,6 @@ body.glass-bg {
     color: var(--text-dark);
 }
 
-
-/* ---------------------- Glassmorphism Card Effect -------------------------------------------------- */
-
 .glass-card {
     background: var(--glass-bg-color);
     backdrop-filter: blur(10px) saturate(180%); 
@@ -52,73 +45,198 @@ body.glass-bg {
     transition: all 0.3s ease-in-out; 
 }
 
-
 .container.glass-card {
     padding: 40px; 
     max-width: 800px;
+    width: 100%;
 }
 
-
-/* ---------------------------------- Header Styling -------------------------------------------------- */
-
-.app-header h1 {
+.colorful-heading {
     text-align: center;
+    margin-top: 0;
     margin-bottom: 40px;
     font-size: 3em;
     font-weight: 700;
     letter-spacing: -1px;
     font-family: 'Product Sans', 'Roboto', sans-serif; 
-    color: var(--accent-green); 
+    color: var(--text-dark); 
+}
+
+.colorful-heading span {
+    color: #FFB300; 
 }
 
 
-/* ------------------------------- Note Section Styling ----------------------------------------------- */
+/* ------------------------------- Note Input Form Styling --------------------------------- */
 
 .add-note-section {
     margin-bottom: 30px;
 }
 
-
 .add-task-box {
     display: flex;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.1); 
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.2); 
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px; 
-    padding: 12px;
+    padding: 16px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     max-width: 550px;
     margin: 0 auto;
 }
 
+.input-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-#new-task-input {
+#new-task-title {
     flex-grow: 1;
     border: none;
     outline: none;
-    font-size: 1.2em; 
+    font-size: 1.2em;
+    font-weight: 700;
     padding: 8px 12px;
     color: var(--text-dark);
     background: transparent;
 }
 
-
-#new-task-input::placeholder {
-    color: var(--text-light);
-    opacity: 0.8; 
+.toolbar-icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
+    opacity: 0.6;
 }
 
+.toolbar-icon-btn.active, .toolbar-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    opacity: 1;
+}
+
+#new-task-content {
+    border: none;
+    outline: none;
+    font-size: 1.1em; 
+    padding: 8px 12px;
+    color: var(--text-dark);
+    background: transparent;
+    resize: none;
+    font-family: inherit;
+}
+
+
+/* Checklist creator list rules */
+
+#new-task-checklist-container {
+    padding: 8px 12px;
+}
+
+.creation-checklist-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.creation-checklist-row input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.1);
+}
+
+.creation-item-text {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1em;
+    color: var(--text-dark);
+    border-bottom: 1px solid transparent;
+}
+
+.creation-item-text:focus {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.remove-creation-item-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 2px 6px;
+}
+
+#add-checklist-item-input-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 0.95em;
+    padding: 4px 8px;
+    margin-left: 20px;
+    text-align: left;
+}
+
+#add-checklist-item-input-btn:hover {
+    color: var(--text-dark);
+}
+
+
+/* Toolbar tools container */
+
+.add-task-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toolbar-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toolbar-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.toolbar-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+#new-task-label {
+    border: 1px solid rgba(255,255,255,0.4);
+    outline: none;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.9em;
+    width: 150px;
+}
 
 #add-task-btn {
     background-color: #FFB300;
     color: var(--text-dark);
     border: none;
     border-radius: 8px;
-    padding: 12px 22px;
+    padding: 10px 20px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 0.95em;
     font-weight: 700; 
 }
 
@@ -127,126 +245,242 @@ body.glass-bg {
 
 .notes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 20px;
 }
 
 
-/* ---------------------------------- Individual Note Card Styling --------------------------- */
+/* --------------------------------- Note Card Styling ----------------------------------- */
 
 .task-item {
+    position: relative; 
     background: rgba(255, 255, 255, 0.15); 
     backdrop-filter: blur(8px) saturate(150%);
     -webkit-backdrop-filter: blur(8px) saturate(150%);
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2); 
-    padding: 20px; 
-    min-height: 120px; 
-    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15); 
+    padding: 16px; 
+    min-height: 150px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.25s ease-in-out;
 }
-
 
 .task-item:hover {
-    box-shadow: 0 6px 24px rgba(0,0,0,0.4); 
-    transform: translateY(-3px); 
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35); 
+    transform: translateY(-2px); 
 }
 
 
-.task-header {
+/* Header layout containing Title & Pin Toggle inside Card */
+
+.card-title-row {
     display: flex;
+    justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 10px; 
+    margin-bottom: 8px;
 }
 
-
-.task-checkbox {
-    margin-right: 15px;
-    min-width: 24px; 
-    min-height: 24px;
-    cursor: pointer;
-    transform: scale(1.2);
-    accent-color: var(--text-light);
-    transition: accent-color 0.2s;
-}
-
-
-.task-checkbox:checked {
-    accent-color: var(--accent-green); 
-}
-
-
-.task-text {
-    flex-grow: 1;
-    font-size: 1.15em; 
-    padding: 5px 0;
-    outline: none;
-    cursor: text;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    min-height: 25px;
-    line-height: 1.5; 
+.note-title {
+    margin: 0;
+    font-size: 1.15em;
+    font-weight: 700;
     color: var(--text-dark);
+}
+
+.card-pin-btn {
     background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 2px;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+}
+
+.task-item:hover .card-pin-btn, .card-pin-btn.active {
+    opacity: 0.9;
+}
+
+
+/* Note Content Container */
+
+.note-content {
+    flex-grow: 1;
+    font-size: 1em;
+    line-height: 1.4;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.note-text-body {
     white-space: pre-wrap;
+    word-wrap: break-word;
+    outline: none;
+}
+
+
+/* Note Card Checklist Row Details */
+
+.note-checklist-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.note-checklist-row {
+    display: flex;
+    align-items: center;
+}
+
+.note-item-checkbox {
+    margin-right: 10px;
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.note-item-text {
+    flex-grow: 1;
+    outline: none;
     word-wrap: break-word;
 }
 
-
-.task-text[contenteditable="true"]:focus {
-    border-color: rgba(255, 255, 255, 0.5); 
-    background-color: rgba(255, 255, 255, 0.1); 
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.4);
-}
-
-
-.completed .task-text {
+.completed-row .note-item-text {
     text-decoration: line-through;
     color: var(--text-light);
+    opacity: 0.7;
+}
+
+.remove-note-item-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 1em;
+    display: none;
+}
+
+.note-checklist-row:hover .remove-note-item-btn {
+    display: block;
 }
 
 
-/* ------------------------- Delete Button Styling (Hover Effect) -------------------------- */
+/* Card direct checklist appender list row */
 
-.delete-btn {
-    background: var(--accent-red); 
-    color: #FFFFFF; 
-    font-size: 1.4em; 
-    font-weight: 900; 
-    cursor: pointer;
-    padding: 5px;
-    position: absolute;
-    bottom: 10px; 
-    right: 10px; 
-    display: none;
-    opacity: 0.9; 
-    transition: all 0.2s ease-in-out; 
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
+.card-add-item-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);              /* Shadow for delete button */
-    border: 1px solid rgba(255,255,255,0.4);
+    opacity: 0.6;
+    margin-top: 4px;
+}
+
+.card-add-item-row span {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.card-add-item-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.9em;
+    width: 100%;
 }
 
 
-.delete-btn:hover {
+/* --------------------------------- Note Card Footer & Dropdown ---------------------------- */
+
+.note-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 8px;
+}
+
+.note-label-badge {
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    padding: 3px 8px;
+    font-size: 0.75em;
+    font-weight: 700;
+    color: var(--text-light);
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.note-actions {
+    position: relative;
+    margin-left: auto;
+}
+
+.menu-trigger-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: var(--text-light);
+    padding: 4px 8px;
+    border-radius: 4px;
+    opacity: 0.5;
+}
+
+.task-item:hover .menu-trigger-btn {
     opacity: 1;
-    background-color: #D32F2F; /* Darker red on hover */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    transform: scale(1.05); /* Slight scale up on hover */
 }
 
 
-/* ----------------------------------- Message for No Tasks ---------------------------------- */
+/* Context menu list container matching keep layout */
+
+.card-menu-dropdown {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: #ffffff;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    padding: 4px 0;
+    margin-bottom: 4px;
+}
+
+.card-menu-dropdown.show {
+    display: flex;
+}
+
+.menu-item {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 8px 12px;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--text-dark);
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.menu-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
 
 .no-tasks-message {
     text-align: center;
     color: var(--text-dark);
     grid-column: 1 / -1;
     font-style: italic;
+    font-size: 1.5em;
     padding: 20px;
 }
 
@@ -257,52 +491,39 @@ body.glass-bg {
     .container.glass-card {
         padding: 30px;
     }
-    .app-header h1 {
+    .colorful-heading {
         font-size: 2.5em;
     }
-    .add-task-box {
-        max-width: 100%;
-    }
     .notes-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Adjust card size */
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     }
 }
-
 
 @media (max-width: 480px) {
     body {
         padding: 10px;
     }
     .container.glass-card {
-        padding: 20px;
+        padding: 16px;
     }
-    .app-header h1 {
+    .colorful-heading {
         font-size: 2em;
-        margin-bottom: 25px;
-    }
-    .add-task-box {
-        flex-direction: column;
-        padding: 10px;
-    }
-    #new-task-input {
-        margin-bottom: 10px;
-        width: 100%;
-        font-size: 1em;
-    }
-    #add-task-btn {
-        width: 100%;
-        padding: 10px 15px;
     }
     .notes-grid {
         grid-template-columns: 1fr;
     }
-    .task-item {
-        min-height: 100px;
-        padding: 15px;
+    .add-task-toolbar {
+        flex-direction: column;
+        gap: 10px;
     }
-    .delete-btn {
-        width: 30px;
-        height: 30px;
-        font-size: 1.2em;
+    .toolbar-tools {
+        width: 100%;
+        justify-content: space-between;
+    }
+    #new-task-label {
+        width: 120px;
+    }
+    #add-task-btn {
+        width: 100%;
     }
 }
