@@ -1,263 +1,517 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const newTaskInput = document.getElementById('new-task-input');
-    const addTaskBtn = document.getElementById('add-task-btn');
+    const noteTitleInput = document.getElementById('new-task-title');
+    const pinToggleBtn = document.getElementById('pin-toggle-btn');
+    const noteContentInput = document.getElementById('new-task-content');
+    const toggleChecklistBtn = document.getElementById('toggle-checklist-btn');
+    const checklistContainer = document.getElementById('new-task-checklist-container');
+    const checklistItemsList = document.getElementById('checklist-items-input-list');
+    const addChecklistRowBtn = document.getElementById('add-checklist-item-input-btn');
+    const noteLabelInput = document.getElementById('new-task-label');
+    const addNoteBtn = document.getElementById('add-task-btn');
+    
+    // Notes Grid Container
     const tasksContainer = document.getElementById('tasks-container');
 
-    // --- Backend API Communication Functions ---
+    // Global states inside note creation panel
+    let isPinnedState = false;
 
-    async function fetchTasks() {
-        try {
-            const response = await fetch('/api/tasks'); 
-            if (!response.ok) { 
-                throw new Error(`HTTP error! status: ${response.status}`);
+
+    // Toggle Pin state in editor panel
+
+    pinToggleBtn.addEventListener('click', () => {
+        isPinnedState = !isPinnedState;
+        pinToggleBtn.classList.toggle('active', isPinnedState);
+    });
+
+    
+    // Toggle checklist builder state in editor panel
+
+    toggleChecklistBtn.addEventListener('click', () => {
+        const isChecklistVisible = checklistContainer.style.display !== 'none';
+        if (isChecklistVisible) {
+
+            // Revert back to plain-text mode
+
+            checklistContainer.style.display = 'none';
+            noteContentInput.style.display = 'block';
+            toggleChecklistBtn.textContent = '☑ Checklist';
+        } else {
+
+            // Toggle checklist mode on
+
+            noteContentInput.style.display = 'none';
+            checklistContainer.style.display = 'block';
+            toggleChecklistBtn.textContent = '📝 Text Note';
+
+            // Start checklist with an initial empty line row
+
+            if (checklistItemsList.children.length === 0) {
+                appendNewChecklistRow();
             }
-            return await response.json(); 
+        }
+    });
+
+
+    // Helper to generate input line elements inside note creation list
+
+    function appendNewChecklistRow(value = "") {
+        const row = document.createElement('div');
+        row.className = 'creation-checklist-row';
+        row.innerHTML = `
+            <input type="checkbox" disabled>
+            <input type="text" class="creation-item-text" placeholder="List item" value="${escapeHTML(value)}" autocomplete="off">
+            <button class="remove-creation-item-btn" type="button">&times;</button>
+        `;
+
+        const textInput = row.querySelector('.creation-item-text');
+        const removeBtn = row.querySelector('.remove-creation-item-btn');
+
+        removeBtn.addEventListener('click', () => {
+            row.remove();
+            if (checklistItemsList.children.length === 0) {
+                appendNewChecklistRow();
+            }
+        });
+
+        textInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const nextRow = appendNewChecklistRow();
+                row.after(nextRow);
+                nextRow.querySelector('.creation-item-text').focus();
+            }
+        });
+
+        checklistItemsList.appendChild(row);
+        return row;
+    }
+
+    addChecklistRowBtn.addEventListener('click', () => {
+        const row = appendNewChecklistRow();
+        row.querySelector('.creation-item-text').focus();
+    });
+
+
+    // Fetch notes from server and render grid
+
+    async function fetchNotes() {
+        try {
+            const response = await fetch('/api/tasks');
+            if (!response.ok) throw new Error('Failed to load notes');
+            const notes = await response.json();
+            renderNotes(notes);
         } catch (error) {
-            console.error('Error fetching tasks:', error);
-            tasksContainer.innerHTML = '<p class="no-tasks-message error">Could not load tasks. Please try refreshing.</p>';
-            return [];
+            console.error('Error fetching notes:', error);
+            tasksContainer.innerHTML = '<p class="no-tasks-message">Error connecting to server.</p>';
         }
     }
 
 
-    async function addTaskToBackend(name) {
-        try {
-            const response = await fetch('/api/tasks', {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name }) // Convert our task name to JSON format
+    // Main Renderer
+
+function renderNotes(notes) {
+    tasksContainer.innerHTML = '';
+
+    if (notes.length === 0) {
+        tasksContainer.innerHTML = '<p class="no-tasks-message">No notes yet. Add one above!</p>';
+        return;
+    }
+
+    notes.forEach(note => {
+        const taskItem = document.createElement('div');
+        taskItem.className = `task-item`;
+        taskItem.dataset.id = note.id;
+
+
+        // Generate card header
+
+        let cardHeaderHTML = `
+            <div class="card-title-row">
+                <h3 class="note-title" contenteditable="true" data-field="title">${escapeHTML(note.title || '')}</h3>
+                <button class="card-pin-btn ${note.pinned ? 'active' : ''}" title="Pin Note">${note.pinned ? 'Pin' : 'Pin'}</button>
+            </div>
+        `;
+
+        
+        // Generate card body based on is_checklist boolean
+
+        let cardBodyHTML = '';
+        if (note.is_checklist) {
+            cardBodyHTML += `<div class="note-checklist-container">`;
+            note.checklist_items.forEach((item, index) => {
+                cardBodyHTML += `
+                    <div class="note-checklist-row ${item.completed ? 'completed-row' : ''}" data-index="${index}">
+                        <input type="checkbox" class="note-item-checkbox" ${item.completed ? 'checked' : ''}>
+                        <span class="note-item-text" contenteditable="true">${escapeHTML(item.text)}</span>
+                        <button class="remove-note-item-btn" type="button">&times;</button>
+                    </div>
+                `;
             });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Failed to add task: ${errorData.error || response.statusText}`);
-            }
-            return await response.json(); 
-        } catch (error) {
-            console.error('Error adding task:', error);
-            alert(`Failed to add task: ${error.message}`);
-            return null;
-        }
-    }
 
+        
+            // Append quick add inline-row inside list note card
 
-    async function updateTaskInBackend(taskId, updates) {
-        try {
-            const response = await fetch(`/api/tasks/${taskId}`, {
-                method: 'PUT',          // We're updating existing data
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updates)
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Failed to update task: ${errorData.error || response.statusText}`);
-            }
-
-            // Backend typically just confirms success for PUT, no new data needed
-
-        } catch (error) {
-            console.error('Error updating task:', error);
-            alert(`Failed to update task: ${error.message}`);
-        }
-    }
-
-
-    async function deleteTaskFromBackend(taskId) {
-        try {
-            const response = await fetch(`/api/tasks/${taskId}`, {
-                method: 'DELETE' // We're deleting data
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Failed to delete task: ${errorData.error || response.statusText}`);
-            }
-        } catch (error) {
-            console.error('Error deleting task:', error);
-            alert(`Failed to delete task: ${error.message}`);
-        }
-    }
-
-
-    // ------------------------------------- UI Rendering Logic --------------------------------
-
-
-    function renderTasks(tasks) {
-        tasksContainer.innerHTML = ''; // Clear out any old tasks or messages first
-
-        if (tasks.length === 0) {
-
-            // If there are no tasks, show a friendly message
-
-            tasksContainer.innerHTML = '<p class="no-tasks-message">No notes yet! Add one above.</p>';
-            return;
-        }
-
-        // Loop through each task and create its HTML representation
-
-        tasks.forEach(task => {
-            const taskItem = document.createElement('div');
-            taskItem.classList.add('task-item');
-            taskItem.dataset.taskId = task.id; // Store the task's ID directly on the HTML element
-
-            // If the task is completed, add a special class for styling (e.g., strikethrough)
-
-            if (task.completed) {
-                taskItem.classList.add('completed');
-            }
-
-            // Construct the HTML for a single task card
-
-            taskItem.innerHTML = `
-                <div class="task-header">
-                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
-                    <span class="task-text" contenteditable="true" role="textbox" aria-label="Edit task">${task.name}</span>
-                    <button class="delete-btn" aria-label="Delete note">&#x2715;</button>
+            cardBodyHTML += `
+                <div class="card-add-item-row">
+                    <span>+</span>
+                    <input type="text" class="card-add-item-input" placeholder="Add item..." autocomplete="off">
                 </div>
             `;
-            tasksContainer.appendChild(taskItem); // Add the new task card to our container
+            cardBodyHTML += `</div>`;
+        } else {
+            cardBodyHTML += `
+                <div class="note-text-body" contenteditable="true" data-field="content">${escapeHTML(note.content || '')}</div>
+            `;
+        }
+
+
+        // Generate card footer containing Tag and Menu trigger dropdown option list
+
+        const footerHTML = `
+            <div class="note-footer">
+                ${note.label ? `<span class="note-label-badge" title="${escapeHTML(note.label)}">${escapeHTML(note.label)}</span>` : ''}
+                <div class="note-actions">
+                    <button class="menu-trigger-btn">⋮</button>
+                    <div class="card-menu-dropdown">
+                        <button class="menu-item delete-note-item">Delete note</button>
+                        <button class="menu-item edit-label-item">${note.label ? 'Change label' : 'Add label'}</button>
+                        ${note.label ? `<button class="menu-item delete-label-item">Delete label</button>` : ''}
+                        <button class="menu-item toggle-checkboxes-item">${note.is_checklist ? 'Hide checkboxes' : 'Show checkboxes'}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        taskItem.innerHTML = cardHeaderHTML + `<div class="note-content">${cardBodyHTML}</div>` + footerHTML;
+
+        // Setup card interactions
+
+        setupNoteCardEvents(taskItem, note);
+        tasksContainer.appendChild(taskItem);
+    });
+}
+
+
+    function setupNoteCardEvents(card, note) {
+        const titleEl = card.querySelector('.note-title');
+        const pinBtn = card.querySelector('.card-pin-btn');
+        const menuTrigger = card.querySelector('.menu-trigger-btn');
+        const dropdownMenu = card.querySelector('.card-menu-dropdown');
+        
+
+        // Context menu items
+
+        const deleteBtn = card.querySelector('.delete-note-item');
+        const editLabelBtn = card.querySelector('.edit-label-item');
+        const toggleCheckboxesBtn = card.querySelector('.toggle-checkboxes-item');
+        const deleteLabelBtn = card.querySelector('.delete-label-item');
+
+
+        // Toggle Pinned Status
+
+        pinBtn.addEventListener('click', async () => {
+            await updateNote(note.id, { pinned: !note.pinned });
+            fetchNotes();
         });
 
 
-        // After all tasks are rendered, attach all the interactive event listeners
+        // Save modified Title on blur
 
-        setupTaskInteractions();
-    }
+        titleEl.addEventListener('blur', async () => {
+            const updatedTitle = titleEl.innerText.trim();
+            if (updatedTitle !== note.title) {
+                await updateNote(note.id, { title: updatedTitle });
+            }
+        });
+
+        titleEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                titleEl.blur();
+            }
+        });
 
 
-    // ----------------------------- Event Listener Setup --------------------------------
+        // Toggle Three-Dot Dropdown Panel
 
-    function setupTaskInteractions() {
+        menuTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
 
-        // --- Hover to Show Delete Button ---
+            // Close all other dropdown menus
 
-        tasksContainer.querySelectorAll('.task-item').forEach(item => {
-            const deleteBtn = item.querySelector('.delete-btn');
-            if (deleteBtn) {                // Ensure button exists before adding listeners
-                item.addEventListener('mouseenter', () => {
-                    deleteBtn.style.display = 'flex';       // Show the button (using flex to center 'X')
+            document.querySelectorAll('.card-menu-dropdown').forEach(menu => {
+                if (menu !== dropdownMenu) menu.classList.remove('show');
+            });
+            dropdownMenu.classList.toggle('show');
+        });
+
+
+        // Delete Card
+
+        deleteBtn.addEventListener('click', async () => {
+            await deleteNote(note.id);
+        });
+
+
+        // Set Label on note card
+
+        editLabelBtn.addEventListener('click', async () => {
+            dropdownMenu.classList.remove('show');
+            const newLabel = prompt("Enter label name:", note.label || "");
+            if (newLabel !== null) {
+                await updateNote(note.id, { label: newLabel.trim() });
+                fetchNotes();
+            }
+        });
+
+
+        // ---> Handle clearing the label <---
+        
+        if (deleteLabelBtn) {
+            deleteLabelBtn.addEventListener('click', async () => {
+                dropdownMenu.classList.remove('show');
+                await updateNote(note.id, { label: "" });
+                fetchNotes();
+            });
+        }
+
+
+        // Toggle checklists on note card ("Show Checkboxes" or "Hide Checkboxes" conversion logic)
+
+        toggleCheckboxesBtn.addEventListener('click', async () => {
+            dropdownMenu.classList.remove('show');
+            if (note.is_checklist) {
+
+                // Convert list items back to multi-line plain text note
+
+                const textContent = note.checklist_items.map(item => item.text).join('\n');
+                await updateNote(note.id, {
+                    is_checklist: false,
+                    content: textContent,
+                    checklist_items: []
                 });
-                item.addEventListener('mouseleave', () => {
-                    deleteBtn.style.display = 'none'; // Hide it again
+            } else {
+
+                // Convert plain text split by newline into checklist objects
+
+                const rawText = note.content || '';
+                const lines = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+                const listItems = lines.map(line => ({
+                    id: Math.random().toString(36).substring(2, 9),
+                    text: line,
+                    completed: false
+                }));
+
+
+                // Fallback inside checklist if empty
+
+                if (listItems.length === 0) {
+                    listItems.push({ id: Math.random().toString(36).substring(2, 9), text: "List item", completed: false });
+                }
+                await updateNote(note.id, {
+                    is_checklist: true,
+                    content: "",
+                    checklist_items: listItems
                 });
             }
+            fetchNotes();
         });
 
         
-        // -------------------------------- Checkbox Toggle Completion -----------------------------
+        // Handle Checklist/Text body interactions inside active rendering Note Cards
 
-        tasksContainer.querySelectorAll('.task-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', async (event) => {
-                const taskItem = event.target.closest('.task-item'); // Find the parent task card
-                const taskId = taskItem.dataset.taskId; // Get the ID from the card
-                const isCompleted = event.target.checked; // Check if the box is now checked
+        if (note.is_checklist) {
+            const listRows = card.querySelectorAll('.note-checklist-row');
+            const inlineAdderInput = card.querySelector('.card-add-item-input');
 
-                taskItem.classList.toggle('completed', isCompleted); // Update visual class
-                await updateTaskInBackend(taskId, { completed: isCompleted }); // Send update to backend
+            listRows.forEach(row => {
+                const idx = parseInt(row.dataset.index);
+                const checkbox = row.querySelector('.note-item-checkbox');
+                const textSpan = row.querySelector('.note-item-text');
+                const removeBtn = row.querySelector('.remove-note-item-btn');
 
-                // Re-fetch and re-render tasks to apply sorting (completed tasks at bottom)
 
-                await loadAndRenderTasks();
+                // Toggle sub-item checkbox completion status
+
+                checkbox.addEventListener('change', async () => {
+                    note.checklist_items[idx].completed = checkbox.checked;
+                    await updateNote(note.id, { checklist_items: note.checklist_items });
+                    fetchNotes();
+                });
+
+
+                // Edit sub-item text line directly
+
+                textSpan.addEventListener('blur', async () => {
+                    const updatedText = textSpan.innerText.trim();
+                    if (updatedText && updatedText !== note.checklist_items[idx].text) {
+                        note.checklist_items[idx].text = updatedText;
+                        await updateNote(note.id, { checklist_items: note.checklist_items });
+                    } else if (!updatedText) {
+                        textSpan.innerText = note.checklist_items[idx].text;
+                    }
+                });
+
+                textSpan.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        textSpan.blur();
+                    }
+                });
+
+
+                // Remove list item from list note card
+
+                removeBtn.addEventListener('click', async () => {
+                    note.checklist_items.splice(idx, 1);
+                    await updateNote(note.id, { checklist_items: note.checklist_items });
+                    fetchNotes();
+                });
             });
-        });
 
 
-        // ------------------------ In-place Editing of Task Text -----------------------------------------
+            // Inline item adding from note card
 
-        tasksContainer.querySelectorAll('.task-text').forEach(textSpan => {
-            let originalText = textSpan.textContent.trim(); // Store original text on focus
-
-            textSpan.addEventListener('focus', () => {
-                originalText = textSpan.textContent.trim(); // Capture current state on focus
-            });
-
-
-            textSpan.addEventListener('blur', async (event) => {
-                const taskItem = event.target.closest('.task-item');
-                const taskId = taskItem.dataset.taskId;
-                const newName = textSpan.textContent.trim(); // Get the new, trimmed text
-
-                if (newName !== originalText && newName !== '') {
-
-                    // If text actually changed and is not empty, update backend
-
-                    await updateTaskInBackend(taskId, { name: newName });
-
-                    // No need to re-render all tasks, just this one visually
-
-                } else if (newName === '') {
-
-                    // If the user cleared the text, revert it or prompt for deletion
-
-                    textSpan.textContent = originalText; // Revert visually
-                    alert('Note cannot be empty. Reverted to original text.');
+            inlineAdderInput.addEventListener('keydown', async (e) => {
+                if (e.key === 'Enter') {
+                    const newItemVal = inlineAdderInput.value.trim();
+                    if (newItemVal) {
+                        note.checklist_items.push({
+                            id: Math.random().toString(36).substring(2, 9),
+                            text: newItemVal,
+                            completed: false
+                        });
+                        await updateNote(note.id, { checklist_items: note.checklist_items });
+                        fetchNotes();
+                    }
                 }
             });
-
-
-            // Handle 'Enter' key during editing: save and unfocus
-
-            textSpan.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    event.preventDefault(); // Stop 'Enter' from creating a new line
-                    textSpan.blur(); // Trigger the 'blur' event to save changes
-                }
-            });
-        });
-
-
-        // -------------------------------------- Delete Task Button ---------------------------------
-
-        tasksContainer.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', async (event) => {
-                const taskItem = event.target.closest('.task-item');
-                const taskId = taskItem.dataset.taskId;
-
-                if (confirm('Are you sure you want to delete this note?')) {
-                    await deleteTaskFromBackend(taskId); // Send delete request
-                    taskItem.remove(); // Remove the task card from the UI immediately
-                    await loadAndRenderTasks(); // Re-render to update "No notes" message if needed
-                }
-            });
-        });
-    }
-
-
-    // -------------------------- Initial Load & New Task Addition ------------------------
-
-    async function loadAndRenderTasks() {
-        const tasks = await fetchTasks();
-        renderTasks(tasks);
-    }
-
-
-    // Event listener for the "Add Note" button
-
-    addTaskBtn.addEventListener('click', async () => {
-        const taskName = newTaskInput.value.trim(); // Get and clean the input text
-        if (taskName) {
-            const newTask = await addTaskToBackend(taskName); 
-            if (newTask) { // Only clear and refresh if add was successful
-                newTaskInput.value = ''; // Clear the input field
-                await loadAndRenderTasks(); // Refresh the entire list
-            }
         } else {
-            alert('Please type a note before adding.'); // Prompt user for input
+
+
+            // Edit plain-text content
+
+            const textBodyEl = card.querySelector('.note-text-body');
+            textBodyEl.addEventListener('blur', async () => {
+                const updatedContent = textBodyEl.innerText.trim();
+                if (updatedContent !== note.content) {
+                    await updateNote(note.id, { content: updatedContent });
+                }
+            });
         }
+    }
+
+
+    // API Call wrappers
+
+    async function addNote() {
+        const title = noteTitleInput.value.trim();
+        const label = noteLabelInput.value.trim();
+        const isChecklist = checklistContainer.style.display !== 'none';
+        
+        let content = "";
+        let checklist_items = [];
+
+        if (isChecklist) {
+            const rows = checklistContainer.querySelectorAll('.creation-checklist-row');
+            rows.forEach(row => {
+                const val = row.querySelector('.creation-item-text').value.trim();
+                if (val) {
+                    checklist_items.push({
+                        id: Math.random().toString(36).substring(2, 9),
+                        text: val,
+                        completed: false
+                    });
+                }
+            });
+        } else {
+            content = noteContentInput.value;
+        }
+
+        if (!title && !content && checklist_items.length === 0 && !label) return;
+
+        try {
+            const response = await fetch('/api/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title,
+                    content,
+                    is_checklist: isChecklist,
+                    checklist_items,
+                    label,
+                    pinned: isPinnedState
+                })
+            });
+
+            if (response.ok) {
+
+                // Reset creation states on success
+
+                noteTitleInput.value = '';
+                noteContentInput.value = '';
+                noteLabelInput.value = '';
+                checklistItemsList.innerHTML = '';
+                isPinnedState = false;
+                pinToggleBtn.classList.remove('active');           
+
+                // Revert visual to text editor default
+
+                checklistContainer.style.display = 'none';
+                noteContentInput.style.display = 'block';
+                toggleChecklistBtn.textContent = '☑ Checklist';
+
+                fetchNotes();
+            }
+        } catch (error) {
+            console.error('Error adding note:', error);
+        }
+    }
+
+    async function updateNote(id, data) {
+        try {
+            await fetch(`/api/tasks/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        } catch (error) {
+            console.error('Error updating note:', error);
+        }
+    }
+
+    async function deleteNote(id) {
+        try {
+            const response = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                fetchNotes();
+            }
+        } catch (error) {
+            console.error('Error deleting note:', error);
+        }
+    }
+
+
+    // Dismiss active card menus on general screen click
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.card-menu-dropdown').forEach(menu => {
+            menu.classList.remove('show');
+        });
     });
 
 
-    // Allow adding a task by pressing 'Enter' in the input field
+    // Sanitization Utility
 
-    newTaskInput.addEventListener('keydown', async (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent default form submission behavior
-            
-            // Trigger the same logic as clicking the Add Note button
-            addTaskBtn.click();
-        }
-    });
+    function escapeHTML(str) {
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
-
-    // ---------------------------------------- Run on Page Load ------------------------------------
-
-    loadAndRenderTasks();
+    addNoteBtn.addEventListener('click', addNote);
+    fetchNotes();
 });
