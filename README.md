@@ -1,115 +1,283 @@
+# 📝 Task Flow – Google Keep Clone
 
-# Taskflow - Google Keep Clone
+A lightweight, self-hosted note-taking application inspired by **Google Keep**, featuring a beautiful **Glassmorphism UI** and powered by a **Flask** backend with a dynamic **Vanilla JavaScript** frontend.
 
-## 🚀 Project Explanation
+Designed for simplicity and productivity, the application supports plain text notes, interactive checklists, labels, pinned notes, and inline editing—all without requiring a database.
 
-This project is a web-based task manager designed to mimic the aesthetic and core functionality of Google Keep. It allows users to:
+---
 
-*   **Add New Notes:** Easily create new tasks or notes via a dedicated input field.
-*   **Mark as Complete:** Toggle the completion status of a note using a prominent green checkbox.
-*   **Edit In-Place:** Directly click and edit the text of any note, saving changes automatically on blur or pressing Enter.
-*   **Delete Notes:** A bold red 'X' button appears when hovering over a note card, allowing for easy deletion.
-*   **Persistent Storage:** All notes are saved to a local JSON file on the server, ensuring your data is retained even after closing and restarting the application.
-*   **Attractive UI:** Features a modern **Glassmorphism** design with a sky-blue theme, vibrant colors, and smooth interactions, providing a delightful user experience.
+## ✨ Features
 
-The application is structured as a full-stack web project, with a Python Flask backend handling data management and a modern HTML, CSS, and JavaScript frontend delivering the interactive user interface.
+### 📌 Note Management
+- Create, edit, and delete notes
+- Pin important notes to the top
+- Automatic save on edit
+- Clean card-based layout
 
-## 🛠️ Tech Stack Used
+### ✅ Interactive Checklists
+- Convert notes into checklists
+- Convert checklists back into plain text
+- Mark checklist items as complete
+- Edit checklist items inline
 
-This project leverages a popular and robust combination of technologies:
+### 🏷 Label Organization
+- Add custom labels
+- Edit existing labels
+- Remove labels
+- Organize notes by category
 
-*   **Backend:**
-    *   **Python 3.x:** The core programming language.
-    *   **Flask:** A lightweight and powerful Python web framework used for:
-        *   Serving the web pages (`index.html`).
-        *   Providing a RESTful API to manage tasks (create, read, update, delete).
-        *   Handling persistent storage of tasks in a JSON file.
-    *   **JSON (JavaScript Object Notation):** Used as a simple, human-readable format for storing task data on the server's filesystem (`data/tasks.json`).
+### ✏️ Inline Editing
+- Edit titles directly
+- Edit note content without opening a new page
+- Automatic save on blur
+- Live UI updates
 
-*   **Frontend:**
-    *   **HTML5:** The standard markup language for creating the structure and content of the web pages.
-    *   **CSS3:** Used for styling the application, including:
-        *   A modern **Glassmorphism** design with transparency and background blur effects.
-        *   A cool **Sky Blue theme** with vibrant accents.
-        *   Responsive design for optimal viewing on various devices (desktops, tablets, mobile).
-        *   Custom styling for checkboxes, hover effects, and a colorful heading.
-    *   **JavaScript (ES6+):** Provides the interactivity and dynamic behavior on the client-side:
-        *   Communicates with the Flask API to fetch, add, update, and delete tasks asynchronously.
-        *   Dynamically renders and updates the task list in the browser.
-        *   Handles all user interactions like checkbox clicks, in-place editing, and delete button hovers/clicks.
+### 📱 Mobile Optimized
+- Responsive design
+- Android-friendly input handling
+- Prevents unwanted browser zoom
+- Larger touch targets
+- Removes blue tap highlights
 
-## 🚀 How to Run the Project
+### 🎨 Modern Glassmorphism UI
+- Frosted glass cards
+- Soft gradients
+- Backdrop blur effects
+- Smooth animations
+- Clean and minimal interface
 
-Follow these steps to get the Task Manager up and running on your local machine:
+### ☁️ Vercel Ready
+- Serverless deployment support
+- Automatic `/tmp` storage fallback
+- Includes `vercel.json` configuration
 
-### 1. **Clone the Repository**
+---
 
-First, clone this project to your local machine using Git:
+# 🛠 Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| Python | Backend Language |
+| Flask | Web Framework |
+| HTML5 | Structure |
+| CSS3 | Glassmorphism Styling |
+| Vanilla JavaScript (ES6) | Frontend Logic |
+| Fetch API | Client-Server Communication |
+| JSON | Local Data Storage |
+| Vercel | Deployment |
+
+---
+
+# 📂 Project Structure
+
+```text
+task-manager/
+│
+├── data/
+│   └── tasks.json                 # Local JSON storage
+│
+├── static/
+│   ├── css/
+│   │   └── style.css              # Glassmorphism styles
+│   │
+│   └── js/
+│       └── main.js                # Frontend logic
+│
+├── templates/
+│   └── index.html                 # Main application page
+│
+├── app.py                         # Flask server & REST API
+├── requirements.txt               # Python dependencies
+├── vercel.json                    # Vercel deployment config
+└── README.md
+```
+
+---
+
+# 🚀 Getting Started
+
+## 1. Clone the Repository
 
 ```bash
 git clone https://github.com/vivekjoshi2006/Task-Manager.git
-cd Task Manager  # Navigate into the project directory
 ```
 
-### 2. **Set Up a Python Virtual Environment (Recommended)**
-
-It's highly recommended to use a virtual environment to manage project dependencies. This isolates the project's packages from your system's global Python packages.
+## 2. Navigate to the Project
 
 ```bash
-# Create a virtual environment named 'venv'
-python -m venv venv
+cd task-manager
+```
 
-# Activate the virtual environment
-# On Windows:
-.\venv\Scripts\activate
-# On macOS / Linux:
+## 3. Create a Virtual Environment (Optional but Recommended)
+
+### Windows
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+### macOS / Linux
+
+```bash
+python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. **Install Dependencies**
-
-With your virtual environment activated, install the required Python packages (Flask) using `pip`:
+## 4. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. **Initialize Task Data File**
-
-The project stores tasks in `data/tasks.json`. Ensure this file exists. If it's a fresh setup, you can create an empty JSON array:
-
-```json
-# data/tasks.json
-[]
-```
-*(The Flask app will create the `data/` directory and handle empty `tasks.json` if it's missing or empty, but explicitly creating it is good practice.)*
-
-### 5. **Run the Flask Application**
-
-Once dependencies are installed, you can start the Flask development server:
+## 5. Run the Application
 
 ```bash
-# Ensure your virtual environment is still activated
 python app.py
 ```
 
-You should see output similar to this:
+## 6. Open in Your Browser
 
 ```
- * Debug mode: on
- * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
- * Restarting with stat
- * Debugger is active!
- * Debugger PIN: XXX-XXX-XXX
+http://127.0.0.1:5000
 ```
-
-### 6. **Access the Application**
-
-Open your web browser and navigate to the address provided by Flask, typically:
-
-[http://127.0.0.1:5000/](http://127.0.0.1:5000/)
-
-You can now interact with Keep-style Task Manager! Changes to notes will be saved automatically to `data/tasks.json`.
 
 ---
+
+# 📡 REST API
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/tasks` | Fetch all notes |
+| POST | `/api/tasks` | Create a new note |
+| PUT | `/api/tasks/<id>` | Update a note |
+| DELETE | `/api/tasks/<id>` | Delete a note |
+
+---
+
+# 💾 Data Storage
+
+The application stores notes locally in:
+
+```text
+data/tasks.json
 ```
+
+When deployed on **Vercel**, it automatically switches to:
+
+```text
+/tmp/tasks.json
+```
+
+to support writable serverless storage.
+
+---
+
+# 🎨 UI Highlights
+
+- Frosted Glass Cards
+- Smooth Blur Effects
+- Responsive Layout
+- Interactive Checklist Controls
+- Inline Editing
+- Soft Color Gradients
+- Mobile-Friendly Design
+
+---
+
+# 📱 Mobile Support
+
+Optimized for modern mobile browsers with:
+
+- Responsive layouts
+- Large touch targets
+- Android keyboard zoom prevention
+- Disabled tap highlights
+- Smooth scrolling experience
+
+---
+
+# ☁️ Deploying to Vercel
+
+This project is already configured for deployment.
+
+Simply:
+
+```bash
+vercel
+```
+
+or connect your GitHub repository to **Vercel** and deploy.
+
+No additional configuration is required.
+
+---
+
+# 📦 Requirements
+
+- Python 3.9+
+- Flask
+- Modern Web Browser
+
+Install all dependencies using:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# 🚀 Future Improvements
+
+- User authentication
+- Rich text editor
+- Image attachments
+- Note archiving
+- Trash & restore
+- Dark mode
+- Search functionality
+- Label filtering
+- Cloud database support
+- User accounts & synchronization
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+
+2. Create a feature branch
+
+```bash
+git checkout -b feature/new-feature
+```
+
+3. Commit your changes
+
+```bash
+git commit -m "Add new feature"
+```
+
+4. Push to GitHub
+
+```bash
+git push origin feature/new-feature
+```
+
+5. Open a Pull Request
+
+---
+
+# 📄 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+# 👨‍💻 Author
+
+Built with ❤️ using **Python**, **Flask**, and **Vanilla JavaScript**.
+
+If you found this project useful, don't forget to ⭐ the repository!
