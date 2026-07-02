@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Keep-Style Notes</title>
+    <title>Task Flow - Google Keep Clone</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@700&display=swap" rel="stylesheet">
 </head>
-
 
 <body class="glass-bg"> 
     <div class="container glass-card"> 
@@ -20,20 +19,16 @@
             <div class="add-task-box">
 
                 <!-- Pin icon toggle inside input field -->
-
                 <div class="input-header-row">
                     <input type="text" id="new-task-title" placeholder="Title" autocomplete="off">
                     <button type="button" id="pin-toggle-btn" class="toolbar-icon-btn" title="Pin note"> Pin</button>
                 </div>
-
-                
+               
                 <!-- Plain-text note container (default) -->
-
                 <textarea id="new-task-content" placeholder="Take a note..." rows="3"></textarea>
                 
 
                 <!-- Checklist container (hidden by default) -->
-
                 <div id="new-task-checklist-container" style="display: none;">
                     <div id="checklist-items-input-list">
 
@@ -45,7 +40,6 @@
 
 
                 <!-- Footer toolbar -->
-
                 <div class="add-task-toolbar">
                     <div class="toolbar-tools">
                         <button id="toggle-checklist-btn" type="button" class="toolbar-btn" title="Toggle Checklist Mode">☑ Checklist</button>
