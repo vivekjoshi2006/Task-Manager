@@ -1,4 +1,4 @@
-# 📝 Task Flow – Google Keep Clone
+# 📝 Task Flow – Google Keep-Style Task Manager
 
 A lightweight, self-hosted note-taking application inspired by **Google Keep**, featuring a beautiful **Glassmorphism UI** and powered by a **Flask** backend with a dynamic **Vanilla JavaScript** frontend.
 
